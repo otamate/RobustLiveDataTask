@@ -1,0 +1,14 @@
+<animation-list
+    android:oneshot="false"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@drawable/sb_icon_1" android:duration="100" />
+    <item android:drawable="@drawable/sb_icon_2" android:duration="100" />
+    <item android:drawable="@drawable/sb_icon_3" android:duration="100" />
+    <item android:drawable="@drawable/sb_icon_4" android:duration="100" />
+    <item android:drawable="@drawable/sb_icon_5" android:duration="100" />
+    <item android:drawable="@drawable/sb_icon_6" android:duration="100" />
+    <item android:drawable="@drawable/sb_icon_5" android:duration="100" />
+    <item android:drawable="@drawable/sb_icon_4" android:duration="100" />
+    <item android:drawable="@drawable/sb_icon_3" android:duration="100" />
+    <item android:drawable="@drawable/sb_icon_2" android:duration="100" />
+</animation-list>
