@@ -40,11 +40,11 @@ class MainActivity : AppCompatActivity() {
 
         mainViewModel = ViewModelProviders.of(this,  ViewModelProvider.AndroidViewModelFactory.getInstance(application))[MainViewModel::class.java]
 
-        mainViewModel.getProgressLiveData().observe(this, Observer<MainViewModel.ProgressData> { progressData ->
-            progressBar.progress = mainViewModel.getProgressData().progress
+        mainViewModel.getProgressLiveData().observe(this, Observer<MainViewModel.ProgressData> {
+            updateUIFromModel()
         })
 
-        mainViewModel.getViewStateLiveData().observe(this, Observer<MainViewModel.ViewStateData> { viewStateData ->
+        mainViewModel.getViewStateLiveData().observe(this, Observer<MainViewModel.ViewStateData> {
             updateUIFromModel()
         })
 
@@ -91,12 +91,13 @@ class MainActivity : AppCompatActivity() {
         }
 
         if (mainViewModel.getViewStateData().isInProgress) {
-            fabRestart.visibility = View.GONE
+            fabRestart.hide()
         } else {
             if (mainViewModel.getViewStateData().isFinished) {
-                fabRestart.visibility = View.VISIBLE
+                fabRestart.show()
             }
         }
+        progressBar.progress = mainViewModel.getProgressData().progress
     }
 
     private val broadCastReceiver = object: BroadcastReceiver() {
