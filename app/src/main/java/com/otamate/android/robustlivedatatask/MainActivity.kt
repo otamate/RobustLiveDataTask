@@ -1,12 +1,14 @@
 package com.otamate.android.robustlivedatatask
 
 import android.app.Notification
+import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.os.Build
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
@@ -34,6 +36,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setContentView(activity_main)
         setSupportActionBar(toolbar)
 
@@ -101,9 +104,11 @@ class MainActivity : AppCompatActivity() {
 
     private val broadCastReceiver = object: BroadcastReceiver() {
         override fun onReceive(contxt: Context?, intent: Intent?) {
-            val mBuilder = NotificationCompat.Builder(applicationContext, NOTIFICATION_CHANNEL)
-                .setSmallIcon(R.drawable.sb_anim_icon)
-                .setContentTitle("Title")
+
+            val channelId = "1"
+            val channelName = "Default"
+            val channelDesc = "Default"
+
             val resultIntent = Intent(applicationContext, MainActivity::class.java)
             val resultPendingIntent = PendingIntent.getActivity(
                 applicationContext,
@@ -112,16 +117,33 @@ class MainActivity : AppCompatActivity() {
                 PendingIntent.FLAG_UPDATE_CURRENT
             )
 
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                val importance = NotificationManager.IMPORTANCE_LOW
+
+                var mChannel = mNotifyMgr.getNotificationChannel(channelId)
+                if (mChannel == null) {
+                    mChannel = NotificationChannel(channelId, channelName, importance)
+                    mChannel.description = channelDesc
+
+                    mNotifyMgr.createNotificationChannel(mChannel)
+                }
+            }
+
+            val mBuilder = NotificationCompat.Builder(applicationContext, NOTIFICATION_CHANNEL)
+                .setSmallIcon(R.drawable.sb_anim_icon)
+                .setChannelId(channelId)
+
             mBuilder.setContentIntent(resultPendingIntent)
+
             val notification = mBuilder.build()
-            notification.flags = notification.flags or
-                    (Notification.FLAG_NO_CLEAR or Notification.FLAG_ONGOING_EVENT)
+            notification.flags = notification.flags or (Notification.FLAG_NO_CLEAR or Notification.FLAG_ONGOING_EVENT)
 
             when (intent?.action) {
                 SHOW_STATUS_BAR_ICON -> mNotifyMgr.notify(NOTIFICATION_ID, notification)
 
                 HIDE_STATUS_BAR_ICON -> mNotifyMgr.cancel(NOTIFICATION_ID)
             }
+
         }
     }
 }
