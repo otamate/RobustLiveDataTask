@@ -105,10 +105,6 @@ class MainActivity : AppCompatActivity() {
     private val broadCastReceiver = object: BroadcastReceiver() {
         override fun onReceive(contxt: Context?, intent: Intent?) {
 
-            val channelId = "1"
-            val channelName = "Default"
-            val channelDesc = "Default"
-
             val resultIntent = Intent(applicationContext, MainActivity::class.java)
             val resultPendingIntent = PendingIntent.getActivity(
                 applicationContext,
@@ -117,21 +113,22 @@ class MainActivity : AppCompatActivity() {
                 PendingIntent.FLAG_UPDATE_CURRENT
             )
 
+            val mBuilder = NotificationCompat.Builder(applicationContext, NOTIFICATION_CHANNEL)
+                .setSmallIcon(R.drawable.sb_anim_icon)
+
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                val importance = NotificationManager.IMPORTANCE_LOW
+                val channelId = "1"
 
                 var mChannel = mNotifyMgr.getNotificationChannel(channelId)
                 if (mChannel == null) {
-                    mChannel = NotificationChannel(channelId, channelName, importance)
-                    mChannel.description = channelDesc
+                    mChannel = NotificationChannel(channelId, "Default", NotificationManager.IMPORTANCE_LOW)
+                    mChannel.description = "Default"
 
                     mNotifyMgr.createNotificationChannel(mChannel)
+
+                    mBuilder.setChannelId(channelId)
                 }
             }
-
-            val mBuilder = NotificationCompat.Builder(applicationContext, NOTIFICATION_CHANNEL)
-                .setSmallIcon(R.drawable.sb_anim_icon)
-                .setChannelId(channelId)
 
             mBuilder.setContentIntent(resultPendingIntent)
 
@@ -143,7 +140,6 @@ class MainActivity : AppCompatActivity() {
 
                 HIDE_STATUS_BAR_ICON -> mNotifyMgr.cancel(NOTIFICATION_ID)
             }
-
         }
     }
 }
