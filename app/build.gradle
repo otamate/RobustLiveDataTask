@@ -14,14 +14,35 @@ android {
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
+
+    if (project.hasProperty("ROBUST_LIVE_DATA_TASK_SIGNINGPROPS")) {
+        signingConfigs {
+            release {
+                Properties properties = new Properties()
+                properties.load(file(ROBUST_LIVE_DATA_TASK_SIGNINGPROPS).newDataInputStream())
+                project.ext.set("RELEASE_STORE_FILE", properties.getProperty('RELEASE_STORE_FILE'))
+                project.ext.set("RELEASE_STORE_PASSWORD", properties.getProperty('RELEASE_STORE_PASSWORD'))
+                project.ext.set("RELEASE_KEY_ALIAS", properties.getProperty('RELEASE_KEY_ALIAS'))
+                project.ext.set("RELEASE_KEY_PASSWORD", properties.getProperty('RELEASE_KEY_PASSWORD'))
+
+                storeFile file(project.RELEASE_STORE_FILE)
+                storePassword project.RELEASE_STORE_PASSWORD
+                keyAlias project.RELEASE_KEY_ALIAS
+                keyPassword project.RELEASE_KEY_PASSWORD
+            }
+        }
+    }
+
     buildTypes {
+        debug {
+            applicationIdSuffix ".debug"
+            sourceSets.debug.resources.srcDirs = ['src/debug/res']
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            applicationVariants.all { variant ->
-                variant.outputs.all {
-                    outputFileName = "${rootProject.name}-${variant.versionName}.apk"
-                }
+            if (project.hasProperty("ROBUST_LIVE_DATA_TASK_SIGNINGPROPS")) {
+                signingConfig signingConfigs.release
             }
         }
     }
